@@ -37,6 +37,10 @@ dependencies:
   firebase_core: ^3.10.0
   firebase_auth: ^5.4.0
   firebase_ui_auth: ^1.16.1
+  cloud_firestore: ^5.6.1
+  flutter_typeahead: ^5.2.0
+  geolocator: ^13.0.2
+  geocoding: ^3.0.0
 
 dev_dependencies:
   flutter_test:
