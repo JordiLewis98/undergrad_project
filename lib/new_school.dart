@@ -65,7 +65,7 @@ class _NewSchoolState extends State<NewSchool> {
     final snapshot = await FirebaseFirestore.instance
         .collection('uk_schools')
         .where('EstablishmentName', isGreaterThanOrEqualTo: query)
-        .where('EstablishmentName', isLessThanOrEqualTo: query + '\uf8ff')
+        .where('EstablishmentName', isLessThanOrEqualTo: '$query\uf8ff')
         .get();
 
     return snapshot.docs.map((doc) {

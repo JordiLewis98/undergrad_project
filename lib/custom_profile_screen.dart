@@ -13,7 +13,7 @@ class CustomProfileScreen extends StatefulWidget {
 
 class _CustomProfileScreenState extends State<CustomProfileScreen> {
   String? userEmail;
-  String? schoolName; // The actual school name from 'uk_schools'
+  String? schoolName;
 
   @override
   void initState() {
@@ -117,7 +117,9 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
                       onPressed: () async {
                         await FirebaseAuth.instance.signOut();
                         if (context.mounted) {
-                          Navigator.of(context).pop();
+                          // Navigate back to the AuthGate screen (which will show the SignInScreen)
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/auth', (route) => false);
                         }
                       },
                       icon: const Icon(Icons.logout),
@@ -131,7 +133,8 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
                       onPressed: () async {
                         await FirebaseAuth.instance.currentUser?.delete();
                         if (context.mounted) {
-                          Navigator.of(context).pop();
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/auth', (route) => false);
                         }
                       },
                       icon: const Icon(Icons.delete, color: Colors.white),
