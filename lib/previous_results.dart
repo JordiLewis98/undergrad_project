@@ -17,14 +17,14 @@ class _PreviousResults extends State<PreviousResults> {
   Future<List<Map<String, dynamic>>> retrieveAnswers() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      return []; // Return an empty list if user is not authenticated
+      return [];
     }
 
     try {
       final snapshot = await FirebaseFirestore.instance
           .collection('responses')
           .where('userId', isEqualTo: user.uid)
-          .orderBy('timestamp', descending: true) // You need the index for this
+          .orderBy('timestamp', descending: true)
           .get();
 
       // Map over the documents and retrieve the answers field
@@ -32,14 +32,13 @@ class _PreviousResults extends State<PreviousResults> {
         final data = doc.data();
         return {
           'timestamp': data['timestamp'],
-          'answers': data['answers'], // Here we retrieve the answers field
+          'answers': data['answers'],
         };
       }).toList();
 
       return responses;
     } catch (e) {
-      print('Error retrieving answers: $e');
-      return []; // Return empty list in case of error
+      return [];
     }
   }
 
@@ -67,8 +66,7 @@ class _PreviousResults extends State<PreviousResults> {
           itemCount: responses.length,
           itemBuilder: (context, index) {
             final response = responses[index];
-            final answers =
-                response['answers']; // This will be your answers map
+            final answers = response['answers'];
 
             return Card(
               child: ListTile(
@@ -76,12 +74,9 @@ class _PreviousResults extends State<PreviousResults> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // If answers is a Map, display each key-value pair
-                    if (answers is Map) ...[
-                      ...answers.entries.map<Widget>((entry) {
-                        return Text('${entry.key}: ${entry.value}');
-                      }).toList(),
-                    ],
+                    ...answers.entries
+                        .map((entry) => Text('${entry.key}: ${entry.value}'))
+                        .toList(),
                   ],
                 ),
               ),
