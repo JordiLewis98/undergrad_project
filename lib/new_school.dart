@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 
+/// Widget for adding a new school and linking it to a user.
 class NewSchool extends StatefulWidget {
   final String userId;
 
+  /// Constructor requires a [userId] to associate the school with a user.
   const NewSchool({required this.userId, super.key});
 
   @override
@@ -14,10 +16,11 @@ class NewSchool extends StatefulWidget {
 }
 
 class _NewSchoolState extends State<NewSchool> {
-  final _formKey = GlobalKey<FormState>();
-  final _schoolNameController = TextEditingController();
-  String? _selectedSchoolId;
-  Timer? _debounce;
+  final _formKey = GlobalKey<FormState>(); // Form key for validation
+  final _schoolNameController =
+      TextEditingController(); // Controller for input field
+  String? _selectedSchoolId; // Stores the selected school ID
+  Timer? _debounce; // Timer for debouncing search queries
 
   @override
   void dispose() {
@@ -26,6 +29,7 @@ class _NewSchoolState extends State<NewSchool> {
     super.dispose();
   }
 
+  /// Saves the selected school to Firestore.
   Future<void> _saveSchool() async {
     if (_formKey.currentState!.validate()) {
       if (_selectedSchoolId == null) {
@@ -46,6 +50,7 @@ class _NewSchoolState extends State<NewSchool> {
           const SnackBar(content: Text('School saved successfully!')),
         );
 
+        // Navigate to authentication screen and remove all previous routes
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/auth', (route) => false);
       } catch (error) {
@@ -56,18 +61,20 @@ class _NewSchoolState extends State<NewSchool> {
     }
   }
 
+  /// Fetches schools from Firestore that match the search query.
   Future<List<Map<String, dynamic>>> _getSchools(String query) async {
     if (query.isEmpty) {
       return []; // No results if the query is empty
     }
 
-    // Use a query that only matches schools whose names start with the query text
+    // Query Firestore for schools whose names start with the query text
     final snapshot = await FirebaseFirestore.instance
         .collection('uk_schools')
         .where('EstablishmentName', isGreaterThanOrEqualTo: query)
         .where('EstablishmentName', isLessThanOrEqualTo: '$query\uf8ff')
         .get();
 
+    // Convert query results into a list of maps
     return snapshot.docs.map((doc) {
       return {
         'id': doc.id,
@@ -76,11 +83,11 @@ class _NewSchoolState extends State<NewSchool> {
     }).toList();
   }
 
-  // Debounce search function to trigger after the user stops typing
+  /// Handles search input changes with a debounce mechanism.
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      // Only run the search when the timer completes
+      // Only update results when the user stops typing
       if (query.isNotEmpty) {
         setState(() {});
       }
@@ -107,7 +114,8 @@ class _NewSchoolState extends State<NewSchool> {
                 ),
               ),
               const SizedBox(height: 8),
-              // Display the results after the user has finished typing
+
+              /// Displays search results after the user stops typing.
               FutureBuilder<List<Map<String, dynamic>>>(
                 future: _getSchools(_schoolNameController.text),
                 builder: (context, snapshot) {
@@ -141,7 +149,10 @@ class _NewSchoolState extends State<NewSchool> {
                   );
                 },
               ),
+
               const SizedBox(height: 24),
+
+              /// Button to save the selected school.
               ElevatedButton(
                 onPressed: _saveSchool,
                 child: const Text('Save School'),
