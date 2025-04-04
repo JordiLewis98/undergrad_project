@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:autism_helper/base_screen.dart'; // Import the BaseScreen file
+import 'package:autism_helper/base_screen.dart'; 
+import 'package:intl/intl.dart';
+
 
 class PreviousResults extends StatefulWidget {
   const PreviousResults({super.key});
@@ -32,7 +34,8 @@ class _PreviousResults extends State<PreviousResults> {
         final data = doc.data();
         return {
           'timestamp': data['timestamp'],
-          'answers': data['answers'],
+          'studentAge': data['studentAge'],
+          'studentGender': data['studentGender']
         };
       }).toList();
 
@@ -66,7 +69,9 @@ class _PreviousResults extends State<PreviousResults> {
           itemCount: responses.length,
           itemBuilder: (context, index) {
             final response = responses[index];
-            final answers = response['answers'];
+            final date = response['timestamp'];
+            final studentAge = response['studentAge'];
+            final studentGender = response['studentGender'];
 
             return Card(
               child: ListTile(
@@ -74,9 +79,9 @@ class _PreviousResults extends State<PreviousResults> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ...answers.entries
-                        .map((entry) => Text('${entry.key}: ${entry.value}'))
-                        .toList(),
+                    Text('Date: ${DateFormat.yMMMMd().add_jm().format(date.toDate().toLocal())}'),
+                    Text('Age: $studentAge'),
+                    Text('Gender: ${studentGender.toString()}'),
                   ],
                 ),
               ),

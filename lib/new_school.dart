@@ -83,7 +83,7 @@ class _NewSchoolState extends State<NewSchool> {
     }).toList();
   }
 
-  /// Handles search input changes with a debounce mechanism.
+  /// Handles search input changes with debounce
   void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
